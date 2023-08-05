@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="shortcut icon" href="#" />
+    <script src="dist/angular-web-components/runtime.js"></script>
+    <script src="dist/angular-web-components/polyfills.js"></script>
+    <script src="dist/angular-web-components/main.js"></script>
+  </head>
+  <body>
+    <!-- <my-dummy></my-dummy> -->
+    <my-app app-input="test" id="app1"></my-app>
+    <my-app app-input="initial">
+      Outside World222222
+    </my-app>
+    <script>
+      const elem1 = document.getElementById("app1");
+      elem1.addEventListener("appOutput", (evt) => {
+        console.log('index--',evt.detail);
+      });
+    </script>
+  </body>
+</html>

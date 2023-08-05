@@ -1,0 +1,119 @@
+1.
+Installing Angular Elements
+While Angular Elements is directly provided by the Angular team, the CLI doesn’t install it. Hence, we need to do this by hand:
+
+npm i @angular/elements
+In former days, @angular/elements also supported ng add. This support came with a schematic for adding a needed polyfill. However, meanwhile, all browsers supported by Angular can deal with Web Components natively. Hence, there is no need for such a polyfill anymore and so the support for ng add was already removed some versions ago.
+
+
+2.
+ng build --prod --output-hashing=none
+
+3. for angular -14
+ng build --configuration production --output-hashing=none
+
+4.
+But what are Web Components?
+Link to this section
+Web Components are the concept of components from frameworks like React or Angular, but built for the web overall, framework-agnostic. What does that mean?
+
+We are used to our simple HTML tags in our UI. For example, we know tags like div, span, and others. They have predefined behavior, and may be used in different places of our view.
+
+Web Components essentially allow us to create new HTML tags/elements using JavaScript. Let’s see a small example of how this is done, purely with JavaScript.
+
+
+class SpanWithText extends HTMLSpanElement {
+    constructor() {
+        super();
+        this.innerText = `Hello, I am a Web Component!`;
+    }
+}
+customElements.define('span-with-text', SpanWithText);
+Here we create a class (just like we write a class for the components in Angular), which extends from HTMLElement (HTMLSpanElement in our case, to be more precise), and whenever this element is created, it will have a innerText with value Hello, I am a Web Component. So, whenever we use our element in the DOM, it will already have the populated text inside itself.
+
+
+<span-with-text></span-with-text>
+
+Cool, can I use it with Angular?
+Of course, it would be great to be able to turn our Angular Components into Web Components and use them wherever we want, no matter the environment. And turns out, with the use of @angular/elements, we can do precisely that.
+
+5.
+Web Components are a set of standardized web technologies that allow developers to create reusable components. These components can be used across different web applications, regardless of the underlying framework or technology used (Angular, React, Vue, Svelte…).
+
+This feature comprises three main technologies: Custom Elements, Shadow DOM, and HTML Templates. Custom Elements allow developers to define new HTML elements, complete with their own encapsulated behavior and properties.
+
+Shadow DOM provides a way to encapsulate and isolate the styles and markup of a component, preventing interference with other parts of the page. HTML Templates enable developers to define reusable chunks of markup that can be instantiated multiple times with different data.
+
+6.
+How to import Web Components into the Angular framework?
+Add CUSTOM_ELEMENTS_SCHEMA to app.module.ts
+
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+  // Add this line to enable the addition of Web Components.
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+})
+export class AppModule { }
+Create a folder web-components in src/app and a file named hello-world.web-component.js and copy this content:
+
+class HelloWorldWebComponent extends HTMLElement {
+
+  constructor() {
+    super();
+    this._message= 'Hello World, from Web Component!';
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  render() {
+    this.innerHTML = `
+      <style>
+        .container {
+          border: 1px solid #000;
+          padding: 1rem;
+        }
+      </style>
+      <div class="container">
+        <h2>${this._message}</h2>
+      </div>
+    `;
+  }
+}
+
+customElements.define('wc-hello-world', HelloWorldWebComponent);
+Import Web Component to AppComponent
+
+import { Component } from '@angular/core';
+
+// import Web Components
+import './web-components/hello-world.web-component';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {}
+Add Web Component tag (wc-hello-world) into app.component.html
+
+<wc-hello-world></wc-hello-world>
+See the result :)
+
+
